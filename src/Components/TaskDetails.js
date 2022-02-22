@@ -14,16 +14,15 @@ function  TaskDetails(){
             )
             const data = await res.json()
             if (res.status===404){
-                setError('Task not found')
+                navigate('/')
             }
             setTask(data)
+            
             setLoading(false)
         }
         fetchTask()
     })
-   if (error){
-       navigate('/')
-   } 
+ 
     return loading ? (
          <h3>Loading...</h3>
     ):(
