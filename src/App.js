@@ -1,7 +1,11 @@
 import  Header from './Components/Header'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Tasks from './Components/Tasks';
 import { useState , useEffect } from "react"
 import AddTask from './Components/AddTask';
+import Task from './Components/Task';
+import Footer from './Components/Footer';
+import About from './Components/About';
 function App() {
   const [showAddTask, setShowAddTask]=useState
   (false)
@@ -22,34 +26,81 @@ const fecthTasks = async() =>{
   const data = await res.json()
   return data
 }
+//fetch task
+const fetchTask = async(id) =>{
+  const  res = await fetch(
+    `http://localhost:5000/tasks/${id}`
+  )
+  const data = await res.json()
+  return data
+}
 //Delete Task
-const deleteTask = (id) =>{
+const deleteTask = async  (id) =>{
+  await fetch(`http://localhost:5000/tasks/${id}`,
+  {
+    method: 'DELETE',
+  }
+  )
   setTasks(tasks.filter((task)=> task.id!==
   id))
+
 }
   //toggle reminder
-const toggleReminder = (id) => {
-    setTasks(tasks.map((task)=>task.id===id ?
-    {...task, reminder:!task.reminder}: task))
+const toggleReminder = async (id) => {
+  const taskToToggle = await fetchTask(id)
+  const updTask= {...taskToToggle,
+    reminder: !taskToToggle.reminder}
+    const res = await fetch(`http://localhost:5000/tasks/${id}`,{
+    method:'PUT',
+    headers: {
+      'Content-type' :'application/json'
+      },
+      body: JSON.stringify(updTask)
+    })
+    const data = await res.json()
+ 
+    setTasks(tasks.map((task)=> task.id===id ?
+    {...task, reminder: data.reminder } : task))
 }
-const addTask = 
-(task)=>{
-
-  const id = Math.floor(Math.random()*10000)+1
-  const newTask ={id,...task}
-  setTasks([...tasks, newTask])
+const addTask = async (task) => {
+  const res = await fetch(`http://localhost:5000/tasks/`,{
+    method: 'POST',
+    headers: {
+    'Content-type' :'application/json'
+    },
+    body: JSON.stringify(task)
+  })
+  const data = await res.json()
+  setTasks([...tasks,data])
+  //const id = Math.floor(Math.random()*10000)+1
+  //const newTask ={id,...task}
+  //setTasks([...tasks, newTask])
 }
 
   return (
+    <Router>
     <div className="container">
       <Header onAdd={()=> setShowAddTask(!showAddTask)} showAdd={showAddTask}/>
-      {showAddTask && <AddTask onAdd={addTask} 
-      />}
+     
+
+      <Routes>
+        <Route path='/' exact element={<>
+           {showAddTask && <AddTask onAdd={addTask} 
+                />}
       {tasks.length > 0 ? 
       <Tasks tasks={tasks} onDelete={deleteTask}
       onToggle= {toggleReminder}
       /> : ('No Tasks to Show')}
+
+        </>} 
+      />
+
+       <Route path='/about' element={<About/>} />
+       </Routes>
+      <Footer/>
+   
     </div>
+    </Router>
   );
 }
 
