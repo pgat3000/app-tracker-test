@@ -6,6 +6,7 @@ import AddTask from './Components/AddTask';
 import Task from './Components/Task';
 import Footer from './Components/Footer';
 import About from './Components/About';
+import TaskDetails from './Components/TaskDetails';
 function App() {
   const [showAddTask, setShowAddTask]=useState
   (false)
@@ -96,6 +97,7 @@ const addTask = async (task) => {
       />
 
        <Route path='/about' element={<About/>} />
+       <Route path='/task/:id' element={<TaskDetails/>} />
        </Routes>
       <Footer/>
    
