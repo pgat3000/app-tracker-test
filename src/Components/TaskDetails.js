@@ -10,7 +10,7 @@ function  TaskDetails(){
     useEffect(()=> {
         const fetchTask = async () =>{
             const res= await fetch(
-            `http://localhost:5000/tasks/${params.id}`    
+            `http://localhost:5001/tasks/${params.id}`    
             )
             const data = await res.json()
             if (res.status===404){
@@ -21,7 +21,7 @@ function  TaskDetails(){
             setLoading(false)
         }
         fetchTask()
-    })
+    },[params.id])
  
     return loading ? (
          <h3>Loading...</h3>
